@@ -1,0 +1,41 @@
+function extractRSSLinks() {
+    // Select all <a> tags with class "ext"
+    const rssLinks = document.querySelectorAll('a.ext');
+
+    // Extract href attributes
+    const rssUrls = Array.from(rssLinks, link => link.href);
+
+    return rssUrls;
+}
+
+function generateOPMLFile(rssUrls) {
+    // Create OPML XML content
+    const opmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>RSS Feeds</title>
+  </head>
+  <body>
+    ${rssUrls.map(url => `<outline text="${url}" type="rss" xmlUrl="${url}" />`).join('\n')}
+  </body>
+</opml>`;
+
+    // Create a Blob from the XML content
+    const blob = new Blob([opmlContent], { type: 'application/xml' });
+
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'rss_feeds.opml';
+
+    // Append the link to the document and trigger the click event
+    document.body.appendChild(link);
+    link.click();
+
+    // Remove the link from the document
+    document.body.removeChild(link);
+}
+
+// Execute the functions
+const rssUrls = extractRSSLinks();
+generateOPMLFile(rssUrls);
