@@ -8,12 +8,12 @@ function extractRSSLinks() {
     return rssUrls;
 }
 
-function generateOPMLFile(rssUrls) {
+function generateOPMLFile(rssUrls, pageTitle) {
     // Create OPML XML content
     const opmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <opml version="2.0">
   <head>
-    <title>RSS Feeds</title>
+    <title>RSS Feeds - ${pageTitle}</title>
   </head>
   <body>
     ${rssUrls.map(url => `<outline text="${url}" type="rss" xmlUrl="${url}" />`).join('\n')}
@@ -23,10 +23,13 @@ function generateOPMLFile(rssUrls) {
     // Create a Blob from the XML content
     const blob = new Blob([opmlContent], { type: 'application/xml' });
 
+    // Generate filename including the webpage title
+    const filename = `${pageTitle.trim().replace(/\s+/g, '_').toLowerCase()}_feeds.opml`;
+
     // Create a download link
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
-    link.download = 'rss_feeds.opml';
+    link.download = filename;
 
     // Append the link to the document and trigger the click event
     document.body.appendChild(link);
@@ -36,6 +39,9 @@ function generateOPMLFile(rssUrls) {
     document.body.removeChild(link);
 }
 
+// Extract page title
+const pageTitle = document.title;
+
 // Execute the functions
 const rssUrls = extractRSSLinks();
-generateOPMLFile(rssUrls);
+generateOPMLFile(rssUrls, pageTitle);
