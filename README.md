@@ -9,7 +9,7 @@ Console commands to get RSS feeds from any website.
 
 4: Copy and paste the commands.
 
-5: There will be a new document named 'rss_feeds.opml'.
+5: There will be a new document named '(webpage title)_feeds.opml'.
 
 6: You can then edit the file or import the feeds into your favorite RSS feed reader.
 
