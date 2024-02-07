@@ -1,9 +1,24 @@
+function encodeXMLEntities(url) {
+    // Define a map of special characters to their XML entities
+    const xmlEntities = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&apos;'
+    };
+
+    // Use a regular expression to find special characters in the URL
+    const specialChars = /[&<>"']/g;
+    return url.replace(specialChars, match => xmlEntities[match]);
+}
+
 function extractRSSLinks() {
     // Select all <a> tags with class "ext"
     const rssLinks = document.querySelectorAll('a.ext');
 
     // Extract href attributes
-    const rssUrls = Array.from(rssLinks, link => link.href);
+    const rssUrls = Array.from(rssLinks, link => encodeXMLEntities(link.href)); // Encode URLs with XML entities
 
     return rssUrls;
 }
@@ -13,10 +28,10 @@ function generateOPMLFile(rssUrls, pageTitle) {
     const opmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <opml version="2.0">
   <head>
-    <title>RSS Feeds - ${pageTitle}</title>
+    <title>RSS Feeds - ${encodeXMLEntities(pageTitle)}</title> <!-- Encode page title with XML entities -->
   </head>
   <body>
-    ${rssUrls.map(url => `<outline text="${url}" type="rss" xmlUrl="${url}" />`).join('\n')}
+    ${rssUrls.map(url => `<outline text="${encodeXMLEntities(url)}" type="rss" xmlUrl="${encodeXMLEntities(url)}" />`).join('\n')} <!-- Encode RSS feed URLs with XML entities -->
   </body>
 </opml>`;
 
@@ -24,7 +39,7 @@ function generateOPMLFile(rssUrls, pageTitle) {
     const blob = new Blob([opmlContent], { type: 'application/xml' });
 
     // Generate filename including the webpage title
-    const filename = `${pageTitle.trim().replace(/\s+/g, '_').toLowerCase()}_feeds.opml`;
+    const filename = `${encodeXMLEntities(pageTitle).trim().replace(/\s+/g, '_').toLowerCase()}_feeds.opml`; // Encode filename with XML entities
 
     // Create a download link
     const link = document.createElement('a');
